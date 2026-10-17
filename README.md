@@ -1,5 +1,5 @@
-# Vue 3 + TypeScript + Vite
+# FRONT Team Assignment 1
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+AI Disclosure: Refer to AI-LOG.md
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+The app can be reached at https://ct26m039.github.io/FRONT-assignment3/. No further setup is required.
