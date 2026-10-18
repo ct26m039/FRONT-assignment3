@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import ConferenceList from "./components/ConferenceList.vue";
 </script>
 
 <template>
-  <HelloWorld />
+    <h1>Conference App</h1>
+    <div>
+        <h2>Conferences</h2>
+        <ConferenceList />
+    </div>
 </template>
