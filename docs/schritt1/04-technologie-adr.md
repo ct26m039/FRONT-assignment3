@@ -1,95 +1,63 @@
-# ADR-1026: Technologie
+# ADR-1026: Frontend-Architektur, Tooling & Deployment-Strategie für VibeConnect
+
 ## Status
 
 Open
 
 ## Datum
 
-2026-10-17
+2026-10-18
 
 ## Kontext
 
-Unsere Plattform ist im letzten Jahr von 3 auf 12 Microservices
-gewachsen. Services kommunizieren derzeit synchron über HTTP-REST-Aufrufe.
-Dies verursacht mehrere Probleme:
+Für die VibeConnect Konferenz-App benötigen wir ein performantes, wartbares Frontend-Setup mit schneller Entwicklung, sauberem State-Management für den Timetable und einer kollaborativen Testumgebung.
 
-- Kaskadierende Ausfälle: Wenn der Inventory Service nicht verfügbar
-  ist, kann der Order Service keine Bestellungen verarbeiten, obwohl
-  Bestandsprüfungen eventual sein könnten.
-- Enge Kopplung: Services müssen die API-Verträge und Endpoints der
-  anderen kennen.
-- Performance-Engpässe: Einige Operationen lösen Ketten von 4-5
-  synchronen Aufrufen aus, was die Latenz erhöht.
-
-Wir verarbeiten ungefähr 100.000 Events pro Tag. Wir erwarten, dass
-dies innerhalb von 12 Monaten auf 500.000 ansteigen wird. Das Team hat
-8 Backend-Ingenieure, von denen 2 vorherige Kafka-Erfahrung haben.
+Im Team haben wir folgende Rahmenbedingungen evaluiert:
+- **Framework-Wahl:** Vorkenntnisse und praktische Erfahrung mit Vue.js im Team.
+- **Routing-Unsicherheit:** Zu Beginn war unklar, ob eine komplexe Multi-View-Struktur nötig ist. Full-Stack-Frameworks wie Nuxt erzwingen ein festes Routing. Wir wollten jedoch modular entscheiden, um agiler zu bleiben.
+- **Deployment & Präsentation:** `localhost` reicht für Stakeholder-Präsentationen nicht aus. Wir benötigten eine praxisnahe, lokalunabhängige Testumgebung.
 
 ## Entscheidung
 
-Wir werden Apache Kafka als primären Mechanismus für asynchrone
-Inter-Service-Kommunikation einführen. Synchrones HTTP bleibt für
-Request/Response-Muster bestehen, bei denen der Aufrufer ein sofortiges
-Ergebnis benötigt (z. B. Authentifizierungsprüfungen).
+Wir treffen folgende technologische Entscheidungen für das Frontend-Setup von VibeConnect:
 
-Wir werden Confluent Cloud als verwalteten Kafka-Anbieter verwenden,
-um den operativen Aufwand zu minimieren.
+1. **Vue 3 (Composition API):** Genutzt wegen Team-Erfahrung und hoher Wartbarkeit.
+2. **Vite:** Ersetzt traditionelle Bundler durch schnelles HMR und einen schlanken Entwicklungsprozess.
+3. **Vue Router (modular):** Gezielter Einsatz, um modular zu entscheiden, wann Views benötigt werden, ohne Framework-Overhead.
+4. **GitHub Pages:** Direkte Publikation für eine echte, öffentlich erreichbare URL ohne `localhost` für unkompliziertes Testen.
 
 ## Betrachtete Alternativen
 
-### RabbitMQ
-- Vorteile: Einfacher zu betreiben, geringere Lernkurve, unterstützt
-  mehrere Messaging-Patterns (Pub/Sub, Point-to-Point, Routing).
-- Nachteile: Weniger geeignet für Event-Sourcing-Patterns, die wir
-  einführen möchten. Schwächere Replay/Rewind-Fähigkeiten. Community-
-  Momentum hat sich bei Event-Driven Architectures zu Kafka verlagert.
-- Warum abgelehnt: Wir erwarten, Event Replay für Audit und Debugging
-  zu benötigen. Kafkas log-basierte Architektur ist dafür besser geeignet.
+### Nuxt.js (Full-Stack Meta-Framework)
+- Vorteile: Stark standardisiert, automatisches Routing, integriertes SSR.
+- Nachteile: Erzwingt vordefinierte Strukturen, was unseren agilen, modularen Ansatz eingeschränkt hätte.
+- Warum abgelehnt: Zu starr für unsere Findungsphase; eine modulare SPA mit Vue + Vite bietet mehr Freiheit.
 
-### AWS SQS + SNS
-- Vorteile: Vollständig verwaltet, keine Infrastruktur zu pflegen,
-  enge AWS-Integration.
-- Nachteile: Vendor Lock-in zu AWS. Begrenzte Garantien für
-  Nachrichtenreihenfolge. Kein eingebautes Stream Processing
-  (würde Kinesis oder Lambda erfordern). Höhere Kosten pro Nachricht
-  bei unserem prognostizierten Volumen.
-- Warum abgelehnt: Wir wollen die Abhängigkeit von AWS nicht vertiefen,
-  und wir brauchen geordnete Nachrichtenzustellung für Finanzereignisse.
+### Reine CSS Custom Properties ohne JSON-Datei
+- Vorteile: Sofortige Browser-Einsatzfähigkeit ohne zusätzliche Build-Tools oder Parser.
+- Nachteile: Fest an CSS gebunden; keine plattformunabhängige "Single Source of Truth" oder Figma-Schnittstelle.
+- Warum abgelehnt: Die tokens.json nach W3C-Standard ist das zukunftssichere Fundament für unser Design-System.
 
-### Synchrones HTTP beibehalten (mit Circuit Breakern)
-- Vorteile: Keine neue Infrastruktur. Team bereits vertraut. Circuit
-  Breaker adressieren kaskadierende Ausfälle.
-- Nachteile: Löst die enge Kopplung nicht. Latenz akkumuliert sich
-  weiterhin über Aufrufketten. Circuit Breaker sind ein Pflaster,
-  keine Lösung für das grundlegende Kopplungsproblem.
-- Warum abgelehnt: Adressiert Symptome, nicht die Ursache.
+### Reines Lokales Hosting (Localhost / ZIP)
+- Vorteile: Keine externe Plattform nötig, offline steuerbar.
+- Nachteile: Keine echte Praxisnähe, umständlich für Team-Reviews und Präsentationen.
+- Warum abgelehnt: GitHub Pages liefert ohne Mehraufwand eine echte Test-URL.
 
 ## Konsequenzen
 
 ### Positiv
-- Services werden entkoppelt: Producer müssen die Consumer nicht kennen.
-- Kaskadierende Ausfälle für asynchrone Workflows eliminiert.
-- Event Replay ermöglicht leistungsfähige Debugging- und Audit-Fähigkeiten.
-- Grundlage für Event-Sourcing-Patterns in zukünftigen Services.
+- **Hohe Entwicklungsgeschwindigkeit:** Vertraute Technologien (Vue + Vite).
+- **Agile Flexibilität:** Modulare Routing-Nutzung statt Framework-Zwang.
+- **Echte Praxisnähe:** Live-URL auf GitHub Pages ohne Kommandozeilen-Hürden.
+- **Geringer Overhead:** Keine komplexe CI/CD-Pipeline notwendig.
 
-### Negativ
-- Operative Komplexität steigt (Kafka Cluster, Schema Registry,
-  Consumer Group Management). Durch Confluent Cloud abgemildert.
-- Team braucht Schulung zu Kafka-Konzepten und -Patterns.
-- Eventual Consistency ersetzt Strong Consistency für asynchrone Flows.
-  Einige Workflows müssen umgestaltet werden.
-- Debugging verteilter asynchroner Flows ist schwieriger als das
-  Nachverfolgen synchroner HTTP-Aufrufe. Wir werden Distributed
-  Tracing benötigen (siehe ADR-0024).
+### Negativ / Herausforderungen
+- Client-Side-Routes müssen für GitHub Pages konfiguriert werden (z. B. `404.html`-Fallback gegen 404-Fehler).
 
 ### Risiken
-- Wenn das Nachrichtenvolumen die Confluent-Cloud-Preisstufen
-  überschreitet, könnten die Kosten erheblich steigen.
-  Überwachen und Alerts einrichten.
-- Schema-Evolution über Services hinweg erfordert Disziplin.
-  Wir planen, Avro mit Schema Registry einzuführen.
+- Bei künftigem SSR- oder SEO-Bedarf wäre eine Migration nötig. Für die Konferenz-App mit personalisiertem Timetable reicht die SPA-Architektur jedoch vollkommen aus.
 
 ## Verwandte Entscheidungen
 
-- ADR-0024: OpenTelemetry für Distributed Tracing einführen
-- ADR-0018: Service-Kommunikationsverträge (durch diesen ADR ersetzt)
+- Schritt 1: Design-Token-Architektur (W3C DTCG Format, Light/Dark Mode Vorbereitung)
+- VibeConnect Konferenz-Daten-Integration (`conference-data.json`)
