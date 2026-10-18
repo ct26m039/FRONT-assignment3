@@ -23,6 +23,7 @@ In den Filter Funktionen wird nur abgeleitet (durch computed) da sie nie auf den
 Sie agieren nur als Getter, die Daten auslesen aber nicht verändern können. Die Komponent greifen auserdem nur auf kleine
 Abschnitte des großen Storages zu, beispielsweise durch useSession(id) oder useFavorite(id). Somit muss nicht jedes mal
 der gesamte Storage geladen werden und er wird nicht dekonstruiert.
+
 ## Sequenzdiagramm
 
 ## Konferenzdaten
