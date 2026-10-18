@@ -23,14 +23,68 @@ In den Filter Funktionen wird nur abgeleitet (durch computed) da sie nie auf den
 Sie agieren nur als Getter, die Daten auslesen aber nicht verändern können. Die Komponent greifen auserdem nur auf kleine
 Abschnitte des großen Storages zu, beispielsweise durch useSession(id) oder useFavorite(id). Somit muss nicht jedes mal
 der gesamte Storage geladen werden und er wird nicht dekonstruiert.
-
 ## Sequenzdiagramm
 
-### Konferenzdaten
+## Konferenzdaten
 
-JSON (conference-data) -> Getter/Composables (useConferenceData etc.) -> Feature Komponenten (SearchBar, ConferenceList,
-SpeakerProfile etc.) -> Basis Komponenten (BaseList, BaseMenu, Header, Footer etc.)
+```mermaid
+flowchart LR
+    JSON["conference-data.json"]
+    COMP["Getter / Composables<br/>useConferenceData u. a."]
 
-### Nutzerdaten
+    subgraph FEATURE["Feature-Komponenten"]
+        direction TB
+        SB["SearchBar"]
+        CL["ConferenceList"]
+        SP["SpeakerProfile"]
+    end
 
-Storage-Event -> userStorage (nur IDs) -> localStorage für Persistenz -> Getter/Composables für Storages -> Komponente "MyProgram"
+    subgraph BASE["Basis-Komponenten"]
+        direction TB
+        BL["BaseList"]
+        BM["BaseMenu"]
+        HD["Header"]
+        FT["Footer"]
+    end
+
+    JSON --> COMP --> FEATURE --> BASE
+```
+
+## Nutzerdaten
+
+```mermaid
+flowchart LR
+    EVT["Storage-Event"]
+    US["userStorage<br/>nur IDs"]
+    LS[("localStorage<br/>Persistenz")]
+    GC["Getter / Composables<br/>für Storages"]
+    MP["MyProgram"]
+
+    EVT --> US --> LS --> GC --> MP
+```
+
+## Gesamtübersicht
+
+```mermaid
+flowchart TB
+    subgraph KD["Konferenzdaten"]
+        direction LR
+        JSON["conference-data.json"]
+        C1["Getter / Composables<br/>useConferenceData u. a."]
+        F1["Feature-Komponenten<br/>SearchBar, ConferenceList, SpeakerProfile"]
+        B1["Basis-Komponenten<br/>BaseList, BaseMenu, Header, Footer"]
+        JSON --> C1 --> F1 --> B1
+    end
+
+    subgraph ND["Nutzerdaten"]
+        direction LR
+        EVT["Storage-Event"]
+        US["userStorage<br/>nur IDs"]
+        LS[("localStorage")]
+        C2["Getter / Composables<br/>für Storages"]
+        MP["MyProgram"]
+        EVT --> US --> LS --> C2 --> MP
+    end
+
+    C1 -. "IDs auflösen" .-> C2
+```
