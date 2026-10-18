@@ -39,7 +39,10 @@ Kontrastverhältnis: 12.0:1
 5. Dunkler Text (`#2d2d2d`) auf Hellgrau / Kartenfarbe (`#dedede`):
 Kontrastverhältnis: 10.2:1 
 
+
 ## Begründung der Tokens-Architektur
+Die Design-Tokens sind vollständig als strukturierte tokens.json im W3C-Standardformat angelegt. Sie trennen primitive Rohwerte von semantischen Verwendungszwecken und dienen als Single Source of Truth für die spätere automatisierte Überführung in CSS Custom Properties.
+
 1. Wartbarkeit: Durch die zentrale Definition der Rohwerte in Token-Dateien können globale Farb- oder Layoutanpassungen im gesamten Projekt mit minimalem Aufwand vorgenommen werden.
 2. Theming-Erweiterbarkeit (Dark Mode): Die saubere Trennung von primitiven und semantischen Tokens stellt sicher, dass für den Dark Mode lediglich die semantischen Farbzuweisungen umgeschaltet werden müssen. Die HTML- und JSON-Struktur der Komponenten bleibt dabei absolut unangetastet.
 3. Konsistenz: Die festgelegte Spacing- und Typografie-Skala erzwingt ein einheitliches, aufgeräumtes Design-Raster über alle Ansichten hinweg.
