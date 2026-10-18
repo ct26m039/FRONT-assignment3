@@ -193,3 +193,156 @@ Wir treffen folgende technologische Entscheidungen für das Frontend-Setup von V
 
 - Schritt 1: Design-Token-Architektur (W3C DTCG Format, Light/Dark Mode Vorbereitung)
 - VibeConnect Konferenz-Daten-Integration (`conference-data.json`)
+
+**Prompt:** Als nächstes folgt das State-managment konzept. Wie sollte die große conference-data.json geladen und modeliert werden? Sollten wir ganze Objekte oder nur IDs verwenden und wie synchronisieren wir das? Wie reaktiv sollten sich die Komponenten verhalten und wie läuft der Datenfluss ab?
+**Antwort:** Ich würde zwischen zwei Arten von Daten trennen, weil sich daraus fast alle anderen Entscheidungen ergeben:
+
+Konferenzdaten (Sessions, Speaker, Räume): groß, im Wesentlichen read-only, kommen aus der JSON bzw. API.
+Nutzerzustand (Favoriten, eigener Zeitplan, Filter): klein, veränderlich, wird lokal persistiert.
+1. Laden der großen JSON
+Nicht ins Bundle importieren, sondern zur Laufzeit laden (fetch aus public/ oder von der API). Sonst wächst euer Hauptbundle und jede Datenänderung erfordert einen Build.
+Einmal laden, in einem Store halten, mit Status (idle | loading | ready | error). Die Komponenten stoßen das Laden nicht selbst an, sondern der App-Start oder der Router-Guard.
+Validieren und mappen in der API-Schicht: JSON → (z. B. mit Zod validiert) → Normalisierer → Domänenmodell. Komponenten sehen nie das Roh-JSON.
+Cachen mit Stale-while-revalidate (z. B. ETag oder ein version-Feld in der JSON): Beim Start sofort die gecachten Daten zeigen, im Hintergrund prüfen, ob es neuere gibt.
+2. Modellierung: normalisieren, Beziehungen per ID
+
+Haltet jede Entität genau einmal und verweist über IDs darauf:
+
+ts
+interface ConferenceState {
+  sessions: Record<string, Session>   // oder Map
+  speakers: Record<string, Speaker>
+  rooms: Record<string, Room>
+  sessionIds: string[]                // Reihenfolge
+}
+
+interface Session {
+  id: string
+  title: string
+  speakerIds: string[]   // Verweis, kein verschachteltes Objekt
+  roomId: string
+  start: string
+  end: string
+}
+
+Ganze Objekte oder IDs? Beides, je nach Ort:
+
+Im Store: Entitäten als ganze Objekte in Lookup-Maps, Beziehungen als IDs. Das vermeidet Duplikate und inkonsistente Kopien.
+Im Nutzerzustand: ausschließlich IDs (favoriteSessionIds). Nie Objekte kopieren, sonst veralten sie bei jedem Daten-Update.
+In den Komponenten: Props sind je nach Schicht unterschiedlich. Eine SessionCard bekommt eine sessionId und holt sich die Daten über ein Composable, oder ein aufgelöstes Objekt, wenn sie rein darstellend ist. Base-Komponenten bekommen nur primitive Werte.
+Verknüpfte Daten (Session samt Speaker-Namen) entstehen erst in Getters bzw. Composables durch Auflösen der IDs, nicht beim Laden.
+3. Synchronisierung
+Einzige Wahrheit: Der Conference-Store ist von außen nur lesbar (readonly), geändert wird er nur durch load()/refresh(). Der User-Store enthält nur IDs und Einstellungen.
+Persistenz nur für den User-Store, über useStorage (VueUse) oder ein Pinia-Persist-Plugin. Der gespeicherte Stand bekommt eine schemaVersion für spätere Migrationen.
+Daten-Updates: Beim Refresh wird der normalisierte Zustand als Ganzes ersetzt. Danach bereinigt ihr verwaiste IDs im Nutzerzustand (z. B. eine Favoriten-Session, die es nicht mehr gibt).
+Mehrere Tabs: useStorage synchronisiert über das storage-Event automatisch.
+4. Reaktivität
+Große Datenmengen flach halten: Die Maps in shallowRef (oder markRaw/Object.freeze für Read-only-Daten) statt tiefer Reaktivität. Das spart bei tausenden Objekten spürbar Speicher und Rechenzeit.
+Aktualisieren durch Ersetzen, nicht durch Mutieren: state.value = newState.
+Abgeleitetes per computed: Gefilterte Listen, “Sessions pro Tag” usw. sind Getter, nie gespeicherter Zustand.
+Schmale Abos: Komponenten greifen auf kleine Ausschnitte zu (useSession(id), useFavorites()), nicht auf den ganzen Store. Dann rendert eine Karte nur neu, wenn sich ihre Daten ändern. storeToRefs nutzen, nicht den Store destrukturieren.
+5. Datenfluss (einseitig)
+JSON / API
+  → api/ (fetch + Validierung)
+  → Normalisierer (DTO → Domänenmodell)
+  → conferenceStore  (shallowRef, readonly nach außen)
+  → Getter / Composables (useSessions, useSession(id), Filter)
+  → Feature-Komponenten
+  → Base-Komponenten (Props runter, Events hoch)
+
+Nutzeraktion (Favorit setzen)
+  → Event → userStore-Action
+  → userStore (nur IDs) → Persistenz (localStorage)
+  → Getter kombinieren conferenceStore + userStore → UI
+
+Die Daten fließen also immer in eine Richtung: runter über Props, hoch über Events, Änderungen nur über Store-Actions.
+
+Passt das zu eurer Headless-Entscheidung?
+
+Ja. Die Composables sind die Schnittstelle zwischen Stores und Komponenten. Sie kapseln Filtern, Auflösen von IDs und Favoriten-Logik. Die Komponenten bleiben dünn, und die Logik ist ohne UI testbar.
+
+Eine Frage, die das Konzept verändert
+
+Bearbeiten Veranstalter die Konferenzdaten in der App selbst, oder ist die JSON nur eine Datenquelle? Bei Bearbeitung braucht ihr zusätzlich Mutations-Actions, optimistische Updates und eine Strategie für Konflikte beim Synchronisieren mit dem Backend. Dann würde ich auch überlegen, einzelne Entitäten feiner reaktiv zu halten. Bei reinem Lesen reicht das Konzept oben.
+
+
+**Prompt:** Ich brauche Mermaid Diagramme für Markdown files basierend auf dieser Struktur:
+Konferenzdaten
+JSON (conference-data) -> Getter/Composables (useConferenceData etc.) -> Feature Komponenten (SearchBar, ConferenceList, SpeakerProfile etc.) -> Basis Komponenten (BaseList, BaseMenu, Header, Footer etc.)
+Nutzerdaten
+Storage-Event -> userStorage (nur IDs) -> localStorage für Persistenz -> Getter/Composables für Storages -> Komponente "MyProgram"
+**Antwort:** 
+
+Hier sind drei Diagramme: je eines für Konferenz- und Nutzerdaten sowie eine Gesamtübersicht. Sie lassen sich direkt in eine `.md`-Datei kopieren.
+
+## Konferenzdaten
+
+```mermaid
+flowchart LR
+    JSON["conference-data.json"]
+    COMP["Getter / Composables<br/>useConferenceData u. a."]
+
+    subgraph FEATURE["Feature-Komponenten"]
+        direction TB
+        SB["SearchBar"]
+        CL["ConferenceList"]
+        SP["SpeakerProfile"]
+    end
+
+    subgraph BASE["Basis-Komponenten"]
+        direction TB
+        BL["BaseList"]
+        BM["BaseMenu"]
+        HD["Header"]
+        FT["Footer"]
+    end
+
+    JSON --> COMP --> FEATURE --> BASE
+```
+
+## Nutzerdaten
+
+```mermaid
+flowchart LR
+    EVT["Storage-Event"]
+    US["userStorage<br/>nur IDs"]
+    LS[("localStorage<br/>Persistenz")]
+    GC["Getter / Composables<br/>für Storages"]
+    MP["MyProgram"]
+
+    EVT --> US --> LS --> GC --> MP
+```
+
+## Gesamtübersicht
+
+```mermaid
+flowchart TB
+    subgraph KD["Konferenzdaten"]
+        direction LR
+        JSON["conference-data.json"]
+        C1["Getter / Composables<br/>useConferenceData u. a."]
+        F1["Feature-Komponenten<br/>SearchBar, ConferenceList, SpeakerProfile"]
+        B1["Basis-Komponenten<br/>BaseList, BaseMenu, Header, Footer"]
+        JSON --> C1 --> F1 --> B1
+    end
+
+    subgraph ND["Nutzerdaten"]
+        direction LR
+        EVT["Storage-Event"]
+        US["userStorage<br/>nur IDs"]
+        LS[("localStorage")]
+        C2["Getter / Composables<br/>für Storages"]
+        MP["MyProgram"]
+        EVT --> US --> LS --> C2 --> MP
+    end
+
+    C1 -. "IDs auflösen" .-> C2
+```
+
+Die gestrichelte Verbindung in der Übersicht habe ich ergänzt: `MyProgram` speichert nur IDs, zeigt aber Titel, Speaker und Zeiten an. Dafür müssen die Storage-Composables die IDs über die Konferenz-Composables auflösen. Falls ihr das anders löst, entfernt die Zeile einfach.
+
+## Anmerkungen
+
+- **Richtung der Pfeile:** Ich habe eure Kette 1:1 übernommen. Im Nutzer-Diagramm ist das eine Mischung aus Schreib- und Leserichtung (Event → Store → localStorage ist Schreiben, die Composables lesen danach). Wenn die Composables wie im früheren Konzept aus dem Store lesen statt direkt aus `localStorage`, wäre `userStorage → Getter/Composables` die sauberere Kante, und `localStorage` hinge als Seitenarm am Store. Sagt Bescheid, dann zeichne ich die Variante.
+- **Renderer:** GitHub, GitLab, Obsidian und VS Code mit Mermaid-Erweiterung zeigen die Blöcke direkt an. In Azure DevOps Wikis lautet die Syntax `::: mermaid` ... `:::`.
+- **Syntax:** Labels mit Sonderzeichen stehen in Anführungszeichen, Zeilenumbrüche sind `<br/>`. Das verhindert die häufigsten Parser-Fehler.
