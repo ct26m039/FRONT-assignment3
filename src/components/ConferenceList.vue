@@ -15,5 +15,9 @@ const sessions = conferences.sessions;
 </template>
 
 <style scoped>
-
+    li {
+        list-style-type: none;
+        margin: 10px;
+        color: #2d2d2d;
+    }
 </style>
