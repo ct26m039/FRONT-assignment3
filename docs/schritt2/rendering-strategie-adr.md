@@ -8,8 +8,6 @@ Bei der Auswahl der Rendering Strategie gibt es die Wahl zwischen vier verschied
 Aufwand für developer, Eigenschaften der vorliegenden Daten, ist ein Server vorhanden?, Userkomfort, Änderungsfrequenz
 der Daten, SEO, Geschwindigkeit, Offlineverfügbarkeit
 
-
-
 ## Optionen
 
 # Entscheidung
