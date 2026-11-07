@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { useConferenceData } from '../composables/useConferenceData';
-import { useLocalStorage } from '../composables/useLocalStorage';
-import {computed} from "vue";
-import {RouterLink} from "vue-router";
+import { useMyProgram} from "../composables/useMyProgram";
+import { RouterLink } from "vue-router";
 
-const {getSessionById} = useConferenceData();
-const savedIds = useLocalStorage('myProgram', [] as string[]);
-const sessions = computed(() => getSessionById(savedIds.value));
+const { sessions, count, remove, conflicts } = useMyProgram();
 </script>
 
 <template>
@@ -14,11 +10,20 @@ const sessions = computed(() => getSessionById(savedIds.value));
     <h1>My Program</h1>
 
     <div class="main-container">
-        <p v-if="sessions.length == 0">Your program is empty.</p>
-        <div v-for="session in sessions" :key=session.id class="session">
-            <RouterLink :to="'/session/' + session.id">{{ session.title }}</RouterLink>
+        <p v-if="count === 0">Your program is empty.</p>
+        <div v-for="session in sessions" :key="session.id" class="session">
+            <RouterLink :to="`/sessions/${session.id}`">{{ session.title }}</RouterLink>
             <p>{{ session.abstract }}</p>
+            <button @click="remove(session.id)">Remove</button>
         </div>
+    </div>
+    <div v-if="conflicts.length > 0" class="warning">
+        <p>⚠️ Time conflicts in your program:</p>
+        <ul>
+            <li v-for="[a, b] in conflicts" :key="a.id + b.id">
+                {{ a.title }} ↔ {{ b.title }} ({{ a.startTime }})
+            </li>
+        </ul>
     </div>
 </template>
 

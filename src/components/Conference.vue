@@ -2,11 +2,13 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useConferenceData } from '../composables/useConferenceData'
+import { useMyProgram } from '../composables/useMyProgram'
 
 // Filled from the route param /sessions/:id (router uses `props: true`).
 const props = defineProps<{ id: string }>()
 
 const { getSessionById } = useConferenceData()
+const { isSaved, toggle } = useMyProgram()
 
 // computed, so the page updates when navigating from one session to another
 // (Vue Router reuses the component instance and only changes the prop).
@@ -34,7 +36,9 @@ const formatDay = (day: string) => {
                 <p class="track">{{ session.track?.name }}</p>
                 <h1>{{ session.title }}</h1>
             </header>
-
+            <button @click="toggle(session.id)">
+                {{ isSaved(session.id) ? 'Remove from My Program' : 'Add to My Program' }}
+            </button>
             <dl class="meta">
                 <div>
                     <dt>Time</dt>

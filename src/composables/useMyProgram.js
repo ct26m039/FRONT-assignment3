@@ -2,7 +2,7 @@ import {useLocalStorage} from "./useLocalStorage.js";
 import { useConferenceData} from "./useConferenceData.js";
 import {computed} from "vue";
 
-const { getSessionsByIds, findConflicts } = useConferenceData();
+const { getSessionById, getSessionsByIds, findConflicts } = useConferenceData();
 const savedSessions = useLocalStorage('savedSessions', [])
 
 const sessions = computed(() => getSessionsByIds(savedSessions.value))
@@ -14,7 +14,7 @@ function isSaved(id) {
 }
 
 function add(id) {
-    if (!sessions.value.includes(id) && isSaved(id)) {
+    if (!getSessionById(id) || isSaved(id)) {
         return;
     }
     savedSessions.value.push(id);
