@@ -1,32 +1,24 @@
 <script setup lang="ts">
 import { useConferenceData } from '../composables/useConferenceData';
+import { useLocalStorage } from '../composables/useLocalStorage';
 import {computed} from "vue";
+import {RouterLink} from "vue-router";
 
-const props = defineProps<{ id: string }>()
-
-const { getSessionById } = useConferenceData();
-
-const session = computed(() => getSessionById(props.id))
-
+const {getSessionById} = useConferenceData();
+const savedIds = useLocalStorage('myProgram', [] as string[]);
+const sessions = computed(() => getSessionById(savedIds.value));
 </script>
 
 <template>
-    <RouterLink to="/program"><button>Back to Program</button></RouterLink>
+    <RouterLink to="/">&larr; All sessions</RouterLink>
+    <h1>My Program</h1>
 
     <div class="main-container">
-        <h1>My Program</h1>
-        <p>Welcome to your program page.</p>
-        <p>Here you can manage your conference program.</p>
-        <div class="program-container">
-            <div class="session">
-                <h2>{{ session.title }}</h2>
-                <p>{{ session.description }}</p>
-            </div>
+        <p v-if="sessions.length == 0">Your program is empty.</p>
+        <div v-for="session in sessions" :key=session.id class="session">
+            <RouterLink :to="'/session/' + session.id">{{ session.title }}</RouterLink>
+            <p>{{ session.abstract }}</p>
         </div>
-        <p>Click the button below to add a new session to your program.</p>
-        <button>Add Session</button>
-        <button>Remove Session</button>
-        <button>Save Program</button>
     </div>
 </template>
 
