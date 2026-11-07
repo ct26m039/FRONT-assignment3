@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import ConferenceList from "./components/ConferenceList.vue";
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-    <div class="app-container">
-        <h1>VibeConnect - Conference App</h1>
-        <div class="conference-list-container">
-            <h2>Conferences</h2>
-            <ConferenceList />
-        </div>
-    </div>
+    <RouterView />
 </template>
 
 <style scoped>

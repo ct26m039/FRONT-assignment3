@@ -9,7 +9,7 @@ We aim to implement multiple functions inside @file:useConferenceData.js which a
 conferences made by the user. What functionality do we need in order to support all four components and correctly read 
 the data?
 
-## Output
+# Output
 
 Two things to fix first
 1. JSON.parse(conferenceData) will throw. Vite already turns a .json import into a JavaScript object, so passing that object to JSON.parse fails with Unexpected token o. Use the import directly. ConferenceList.vue already does this.
@@ -58,7 +58,7 @@ How would you go about an implementation of the suggested structure and why have
 Additionally, we do not need full functionality of the components yet, just the functions for the javascript files since
 that will be added later
 
-## Output
+# Output
 
 I wrote two files: src/composables/useConferenceData.js and src/composables/useLocalStorage.js. Components are untouched. I ran the composable in Node against the real JSON and every function returned the expected result:
 
