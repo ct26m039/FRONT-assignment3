@@ -27,7 +27,6 @@ ob ein Server vorhanden ist, dem Userkomfort, der Änderungsfrequenz der Daten, 
 der Latenz und der Verfügbarkeit bei nichtvorhandenem Internet.
 
 
-
 ## Session-Detailseite:
 Stellt spezifische Informationen zu einem Konferenzvortrag dar (Titel, Raum, Zeitslot, etc.). War sind die Konferenzdaten schon vorab geplant und gegeben, können aber in der Realitiät kurzfristigen Änderungen unterliegen (zB. Raumverschiebung). Session-Seiten sind SEO relevant.
 
