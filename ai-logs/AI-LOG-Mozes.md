@@ -382,3 +382,10 @@ Der erste Nutzer nach Ablauf der Zeit sieht eventuell noch veraltete Daten (stal
 > Sie gehört nach `src/components/SearchBar.vue`, neben `BaseMenu.vue`, `BaseList.vue` und `ConferenceList.vue`. `BaseMenu.vue` importiert sie über `./SearchBar.vue`, deshalb müssen beide im selben Ordner liegen. Ohne diese Datei bricht Vite mit einem Importfehler ab.
 >
 > Die Komponente funktioniert mit `v-model`, zeigt eine Lupe und blendet bei Eingabe einen Löschen-Button ein. Getestet habe ich sie nicht, weil ich dein Projekt nicht laufen lassen kann.
+
+### Eintrag
+- **Datum:** 08.11.2026
+- **Tool:** Claude (Claude Sonnet 5.5)
+- **Prompt:** Der Menüpunkt „My Program" fehlt, er war vorher da und wurde beim Umbau der Übersicht entfernt. Er soll im Header stehen. Dazu: Die Komponente `Header.vue` ist noch leer, und nach dem Einbinden in `App.vue` ändert sich auf der Seite nichts.
+- **Zweck:** Einen globalen Header mit Navigation (Sessions, My Program) anlegen, in `App.vue` einbinden und klären, warum er zunächst nicht angezeigt wurde.
+- **Antwort:** Claude erklärte, dass der Link beim Umbau der Übersichtsseite entfernt wurde, und empfahl, ihn in die globale Navigation im Header zu setzen, damit er auf jeder Seite erreichbar ist. Claude erstellte `Header.vue` (beerenroter Balken mit „VibeConnect" und den Links, mit den Design-Tokens und Dark Mode) und passte `App.vue` an (`<Header />` über `<RouterView />`, nicht mehr benötigte Styles entfernt). Die Links nutzen direkte Pfade (`/` und `/program`) statt Routennamen. Bei der Fehlersuche ergab sich, dass Änderungen den Browser nicht erreichten. Mit Testtexten in `App.vue` und `Header.vue` wurde das geprüft, und danach waren beide sichtbar. Der Fehler lag nicht im Code, sondern an einem veralteten Stand der Anzeige. Zum Schluss sollten die Testtexte entfernt und der Link in `ConferenceList.vue` gelöscht werden, damit „My Program" nicht doppelt erscheint.
