@@ -47,18 +47,26 @@ SSR garantiert, dass TeilnehmerInnen stets den aktuellen Stand sehen, ohne, dass
 
 
 ## "Mein Programm"-Dashboard:
+Das Dashboard visualisiert die vom Benutzer individuell zusammengestellte Konferenzagenda. Die Auswahl der Sessions wird clientseitig im localStorage des jeweiligen Browser bestehen bleiben. In unserer Anwendung gibt es kein zentrales Benutzerkonto oder Backend.  
 
 ## Optionen
 - CSR
+Vorteile: App läuft direkt im Browser des Benutzers und kann den localStorage sofot auslesen. Wenn Session Hinzugefügt/Entfernt werden,  aktualisiert sich die Ansicht ohne die Neuladen der Seite.
+Nachteile: Beim ersten Laden längere Ladedauer und Suchmaschinen sehen die Inhalte nicht sofort. 
 - SSR
+Vorteile: Server baut die HMTL-Seite vorab zusammen, wodurch ein erster Entwurf schnell angezeigt wird.
+Nachteile: Server hat keinen Zugriff auf den Browser-Speicher des Nutzers. 
 - ISR
-
+Vorteile: Die Seite wird einmal als fertige Datei abgespeichert und schnell ausgeliefert. Im Hintergrund könnne Änderungen nach und nach erneuert werden.
+Nachteile: Eine einmal erstellte Seite gilt für alle Nutzer gleich, der Server kann keine statische Seiten bauen, die für jeden Nutzer andere gemerkte Sessions anzeigt. 
 
 # Entscheidung
 "Mein Programm"-Dashboard: CSR F
 
-
-
 ## Konsequenzen & Begründung
+Da die gespeichertes Sessions ausschließlich auf dem Gerät der Nutzers liegen (localStorage) ist CSR die technisch sinnvollste Lösung:
+SSR und ISR scheiden aus, weil der Server den lokalen Browser-Speicher nicht lesen kann. 
+CSR greift direkt im Browser auf die gespeicherten Daten zu und verknüpft sie mit den Konferenzdaten aus useConferenceData.
+Weil es sich um eine private Übersicht handelt, spielen SEO  und das vorab Rendern auf dem Server keine Rolle. 
 
 
