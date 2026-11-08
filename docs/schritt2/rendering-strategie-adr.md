@@ -27,10 +27,18 @@ ob ein Server vorhanden ist, dem Userkomfort, der Änderungsfrequenz der Daten, 
 der Latenz und der Verfügbarkeit bei nichtvorhandenem Internet.
 
 ## Optionen
-Speaker-Profile F
+Speaker-Profile:
+Kontext: Die Speaker-Profilseiten präsentieren Infos zu den Vortragneden. Diese Profildaten stammen aus dem Konferenzdatensatz und ändern sich während der Konferenz kaum oder gar nicht. Die Seiten dienen zur Information und sind SEO relevant. 
 - SSG
+Vorteile: GuteLadezeiten, Ausfallsicherheit und minimale Serverkosten, da alle 18 Speaker-Seiten beim Build komplett als statisches HTML erzeugt und über ein CDN ausgeliefert werden. Perfekt für Suchmaschinen.
+Nachteile: Nachträgliche Textänderungen an Biografien erfordern einen erneuten Build- und Deployment-Prozess.
 - SSR
+Vorteile: Jeder Aufruf generiert die Seite frisch auf dem Server, Speaker-Daten können bis zur letzten Sekunde angepasst werden.
+Nachteile: Unnötige Serverauslastung und höhere Antwortzeiten für Daten, die sich praktisch nie zur Laufzeit ändern.
 - ISR
+Vorteile: Seiten werden statisch ausgeliefert und können bei Bedarf im Hintergrund nach einem festgelegten Zeitintervall neu gebaut werden.
+Nachteile: Für einen kleinen, statischen Datensatz von lediglich 18 Speakern ein unnötiger technischer Overhead.
+
 
 Session-Detailseite
 - SSG
