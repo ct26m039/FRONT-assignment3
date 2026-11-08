@@ -18,6 +18,8 @@ The overview page (`ConferenceList.vue`) is rendered entirely in the browser (cl
 - **Preparation:** `useConferenceData()` builds the lookup maps (session, speaker, track, room) once when the module loads and resolves ID references into objects.
 - **Filtering:** Track, conference day, and level (plus text search and format) are applied through `filterSessions()`. Multiple active filters are combined with AND. The result list is a `computed` value, so the display updates without a reload and without a server.
 - **Grouping:** `groupSessionsByDay()` groups the result by day and sorts it by start time.
+
+
 Addendum:
 
 The original Fanny-Mozes branch caused issues during development and so was depricated mid-development. 
