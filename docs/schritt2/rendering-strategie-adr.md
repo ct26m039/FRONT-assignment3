@@ -55,10 +55,18 @@ Ebenfalls muss der User nichts bezüglich den Daten speicher, weswegen auch Clie
 Static-Site-Generation ist ebenfalls anwendbar, hängt jedoch von der Serverstruktur und etwaigen Datenbankverbindungen ab.
 Sind diese vorhanden ist SSG nicht zu empfehlen, da bei kleinen Änderungen direkt die gesamte Seite manuell neugeladen werden muss.
 
-Session-Übersicht F
+
+Session-Übersicht:
+Kontext: 
 - SSG
+Vorteile:
+Nachteile:
 - CSR
+Vorteile:
+Nachteile:
 - SSR
+Vorteile:
+Nachteile:
 
 "Mein Programm"-Dashboard 
 - CSR
@@ -84,7 +92,10 @@ ist jedoch, dass bei Ausfall des Servers auch der Stand des Userprogramms verlor
 die einträge weiterhin im Local Storage gespeichert und bei bedarf abrufbar.
 
 # Entscheidung & Begründung
-Speaker-Profile: SSG F
+Speaker-Profile: SSG 
+
+Die Speaker-Profile stellen rein statischen Content dar. Daher bietet SSG die optimale Kombination aus höchstmöglicher Performance, SEO-Sichtbarkeit und Ressourceneffizienz. Ein erneutes Rendern auf dem Server bei jedem Seitenaufruf (SSR) wäre Ressourcenverschwendung. Sollte sich im Vorfeld ein Tippfehler einschleichen, genügt ein kurzer Deployment-Build.
+
 
 Session-Detailseite: SSG 
 
