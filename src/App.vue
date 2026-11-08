@@ -1,33 +1,28 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
+import Header from './components/Header.vue'
 </script>
 
 <template>
-    <RouterView />
+  <div class="app">
+    <Header />
+    <main>
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-    h1 {
-        font-size: 2em;
-        color: #850c54;
-        text-align: center;
-    }
+.app {
+  min-height: 100vh;
+  background: var(--color-surface-base, #ffffff);
+  color: var(--color-text-primary, #2d2d2d);
+}
 
-    h2 {
-        color: #2d2d2d;
-    }
-
-    .app-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #dedede;
-    }
-
-    .conference-list-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #dedede;
-    }
+@media (prefers-color-scheme: dark) {
+  .app {
+    background: var(--color-surface-base, #212121);
+    color: var(--color-text-primary, #ffffff);
+  }
+}
 </style>
