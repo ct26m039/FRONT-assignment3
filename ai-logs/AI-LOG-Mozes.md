@@ -1,0 +1,5 @@
+## Specifications
+Model used: Gemini
+
+
+
