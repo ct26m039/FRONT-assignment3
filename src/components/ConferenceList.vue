@@ -28,6 +28,7 @@ const speakerNames = (session) => session.speakers.map((s) => s.name).join(', ')
 
 <template>
   <div class="overview">
+     <h2 class="page-title">Programm</h2>
     <div class="filters" role="search">
       <div class="field search">
         <label for="f-query">Suche</label>
