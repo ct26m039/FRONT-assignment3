@@ -130,3 +130,75 @@ Der erste Nutzer nach Ablauf der Zeit sieht eventuell noch veraltete Daten (stal
 > Dein Kollege hat auch die Funktionen für `Conference.vue` passend gebaut. `getSessionById` und `getParallelSessions` existieren, und beide liefern `track`, `room` und `speakers` als Objekte. Die Detailseite sollte damit direkt funktionieren.
 >
 > Die Composable bringt noch mehr mit, was zu eurer App-Idee passt: `filterSessions` (Suche nach Titel, Abstract und Speaker plus Filter nach Track, Tag, Level und Format) und `filterOptions` für Dropdowns. Sagt Bescheid, wenn ich oben in der Übersicht eine Such- und Filterleiste im gleichen Stil ergänzen soll, oder einen Herz-Button pro Zeile für "Mein Programm", denn `isSaved` und `toggleSession` kenne ich ja schon aus der Detailseite.
+
+### Eintrag
+- **Datum:** 08.11.2026
+- **Tool:** Claude (Claude Sonnet 5.5)
+- **Prompt:**
+
+> aber d filter option sind noch nciht implementiert wie implenetiere ich das
+
+- **Zweck:** Such- und Filterfunktion in die Übersichtsseite einbauen.
+- **Antwort:**
+
+> Das geht ohne viel Aufwand, denn die Composable deines Kollegen liefert dafür schon alles: `filterSessions()` für Suche und Filter und `filterOptions` für die Dropdown-Werte. Ich baue die Filterleiste jetzt in die Übersicht ein.
+>
+> Ich habe `ConferenceList.vue` um Suche und Filter erweitert. Getestet habe ich es nicht, weil ich dein Projekt nicht laufen lassen kann. Ersetze einfach die Datei, du musst nichts weiter anpassen.
+>
+> **Was jetzt möglich ist:**
+> - **Suche:** über Titel, Beschreibung und Speaker-Namen.
+> - **Dropdowns:** Track, Tag, Level und Format. Die Werte kommen aus `filterOptions` der Composable, bleiben also automatisch aktuell, wenn sich die Daten ändern.
+> - **Kombination:** Alle Filter wirken zusammen, zum Beispiel "Fortgeschritten" im Track "Rendering & Performance" am zweiten Tag.
+> - **Trefferanzahl** ("5 von 20 Sessions") und ein Link **"Filter zurücksetzen"**, der nur erscheint, wenn etwas gefiltert ist.
+> - **Leerer Zustand** mit Hinweis, wenn nichts passt.
+> - Jede Zeile zeigt zusätzlich Level und Format als Badges, damit man sieht, wonach gefiltert wurde.
+>
+> **So funktioniert es technisch:** Die Filterwerte liegen in einem `reactive`-Objekt (`filters`). Das Ergebnis von `filterSessions(filters)` wird mit `groupSessionsByDay()` wieder nach Tagen gruppiert. Weil beides `computed` ist, aktualisiert sich die Liste sofort bei jeder Eingabe.
+>
+> Der Rahmen der Eingabefelder hat einen eigenen Grauton (`#8a8a8a`), weil der helle Linienton (`#dedede`) für Formularfelder zu wenig Kontrast hätte. Er steht wie die anderen Werte ohne Token im Block "Kein Token vorhanden".
+>
+> Als Nächstes würde der Herz-Button pro Zeile für "Mein Programm" passen. Dafür bräuchte ich nur kurz bestätigt, dass `useMyProgram` weiterhin `isSaved` und `toggleSession` liefert.
+
+### Eintrag
+- **Datum:** 08.11.2026
+- **Tool:** Claude (Claude Sonnet 5.5)
+- **Prompt:**
+
+> hier ist die genaue anforderung: Alle 20 Sessions, filterbar nach Track, Konferenztag, Level — Filter kombinierbar (UND-Verknüpfung). useConferenceData() aus Schritt 1 tatsächlich implementieren (nicht mehr nur Konzept), Rendering-Entscheidung aus A für diesen Teil umsetzen. Deliverable: lauffähige, filterbare Übersichtsseite + kurzer README-Bezug zur Rendering-Entscheidung.
+
+- **Zweck:** Stand gegen die Anforderung prüfen und einen README-Bezug zur Rendering-Entscheidung entwerfen.
+- **Antwort:**
+
+> Ich habe die Anforderung gegen den Stand geprüft. Zu den Details muss ich noch eine Frage klären, die steht unten.
+>
+> **Was erfüllt ist:**
+> - **Alle 20 Sessions:** Die Übersicht zeigt standardmäßig alle Sessions (Anzeige "20 von 20 Sessions"), nach Tag gruppiert.
+> - **Filter nach Track, Konferenztag und Level:** Alle drei sind als Dropdowns vorhanden.
+> - **UND-Verknüpfung:** `filterSessions()` in der Composable prüft jedes gesetzte Kriterium mit `&&`. Leere Filter werden ignoriert, mehrere gesetzte Filter müssen alle zutreffen.
+> - **`useConferenceData()` implementiert:** Das hat dein Kollege geliefert, und die Übersicht nutzt es jetzt tatsächlich (`filterSessions`, `groupSessionsByDay`, `filterOptions`).
+>
+> Zusätzlich gibt es eine Textsuche und einen Format-Filter, die in der Anforderung nicht stehen. Sie stören die UND-Logik nicht. Wenn ihr sie nicht wollt, entfernst du in `ConferenceList.vue` das Suchfeld und das Format-Dropdown aus dem Template. Die Composable muss dafür nicht angefasst werden.
+>
+> Für den README-Teil habe ich einen Entwurf geschrieben, der beschreibt, wie die Übersicht tatsächlich gerendert wird:
+>
+> Den README-Abschnitt habe ich als `README-Rendering.md` geschrieben. Er ist kurz gehalten und passt zu dem, was im Code tatsächlich passiert: Client-Side Rendering einer Vue-SPA mit statischen Daten, Filterung im Browser, UND-Verknüpfung über `filterSessions()`.
+>
+> Eine Stelle ist bewusst offen, weil ich deine Rendering-Entscheidung aus Aufgabe A nicht kenne. Sie steht in eurem Material nicht drin, und ich will sie nicht erfinden. Oben im README steht ein Platzhalter für den Satz mit dem Bezug zu A. Auch die Begründung weiter unten stammt von mir aus dem Code und nicht aus eurer Dokumentation. Wenn du mir sagst, wie die Entscheidung in A lautet (z. B. CSR, SSR oder SSG) und was ihr als Begründung genannt habt, setze ich sie ein und gleiche die Begründung an. Falls A etwas anderes als Client-Side Rendering ergeben hat, müssten wir den Abschnitt ändern, denn die jetzige Umsetzung ist reines CSR.
+>
+> Ob die Seite bei dir läuft, kann ich nicht prüfen, ich habe dein Projekt nicht gestartet. Teste die Anforderung am besten kurz selbst. Mit allen Filtern auf "Alle" siehst du "20 von 20 Sessions", und wenn du Track, Tag und Level zusammen setzt, bleibt nur übrig, was alle drei erfüllt (z. B. Rendering & Performance, 15.09., Experte → nur die Session über Partial Hydration).
+
+### Eintrag
+- **Datum:** 08.11.2026
+- **Tool:** Claude (Claude Sonnet 5.5)
+- **Prompt:**
+
+> lass das read.me und gib mir den code
+
+- **Zweck:** Vollständigen Code der Übersichtsseite mit Filtern zum Übernehmen erhalten.
+- **Antwort:**
+
+> Hier ist der komplette Code für `src/components/ConferenceList.vue`. Ersetze damit deine bisherige Datei:
+>
+> *(Code von ConferenceList.vue, siehe Projektdatei)*
+>
+> Die Datei `README-Rendering.md` kannst du einfach ignorieren oder löschen, sie gehört nicht zu deinem Projekt, solange du sie nicht selbst hineinkopierst.
