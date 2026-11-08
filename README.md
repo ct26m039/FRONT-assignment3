@@ -22,8 +22,3 @@ Addendum:
 
 The original Fanny-Mozes branch caused issues during development and so was depricated mid-development. 
 A new branch was created to fix issues, but the old branch is still available with all commits for proof of work.
-
-Addendum:
-
-The original Fanny-Mozes branch caused issues during development and so was depricated mid-development. 
-A new branch was created to fix issues, but the old branch is still available with all commits for proof of work.
