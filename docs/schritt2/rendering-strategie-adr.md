@@ -57,16 +57,17 @@ Sind diese vorhanden ist SSG nicht zu empfehlen, da bei kleinen Änderungen dire
 
 
 Session-Übersicht:
-Kontext: 
+Kontext: Die Übersichtseite zeigt alle 20 Konferenzen. Eine Filterung soll für Benutzer möglich sein. Dies soll unimittelbar und flüssig ohne Ladezeiten reagieren. 
+
 - SSG
-Vorteile:
-Nachteile:
+Vorteile: Die Basisliste aller 20 Vorträge wird vorab als HTML generiert. Suchmaschinen können das gesamte Programm sofort crawlen und die Seite lädt extrem schnell.
+Nachteile: Die statische Seite zeigt zwar sofort alle Vorträge an, aber das Filtern selbst geht erst, wenn das JavaScript im Browser geladen und aktiv ist.
 - CSR
-Vorteile:
-Nachteile:
+Vorteile: Die Filterung nach Tag, Track und Level reagiert verzögerungsfrei im Browser des Nutzers, ohne Anfragen an einen Server. Die Implementierung mit Vue-Reaktivität (computed) ist schlank und einfach.
+Nachteile: Initial leerer HTML-Inhalt, schlechtere SEO-Erkennbarkeit für Suchmaschinen, da der Inhalt erst durch JavaScript im Browser aufgebaut wird.
 - SSR
-Vorteile:
-Nachteile:
+Vorteile: Liefert stets serverseitig gerendertes HTML und kann URL-Filterparameter (z. B. ?track=ai-dx) serverseitig vorfiltern.
+Nachteile: Bei jedem Filterwechsel einen Server-Roundtrip auszulösen erzeugt merkliche Latenzen und verschlechtert die Benutzererfahrung (UX) im Vergleich zu lokaler Filterung.
 
 "Mein Programm"-Dashboard 
 - CSR
@@ -113,7 +114,11 @@ durchgeführt werden. Sollten sich Daten ändern, muss dies nicht sofort für al
 simpler Reload der Seite ausreicht um die Daten zu aktualisieren. Ebenfalls sind die Daten, die exklusiv auf der Detailseite angezeigt werden
 nicht wichtig genug um eine reaktive Aktualisierung zu rechtfertigen.
 
-Session-Übersicht: SSG F
+
+Session-Übersicht: SSG 
+
+Nutzer wechseln wiederholt Tags, Tracks und Level. Da der gesamte Datensatz kompakt ist (20 Sessions), werden die Daten über useConferenceData() clientseitig vorgehalten. Die Filterlogik läuft verzögerungsfrei und reaktiv direkt im Browser. SSR scheidet wegen der Latenzen beim Filtern aus. CSR liefert hier die flüssigste Bedienung für die Teilnehmenden.
+
 
 "Mein Programm"-Dashboard: CSR 
 
