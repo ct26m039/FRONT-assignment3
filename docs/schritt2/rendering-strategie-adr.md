@@ -27,33 +27,33 @@ ob ein Server vorhanden ist, dem Userkomfort, der Änderungsfrequenz der Daten, 
 der Latenz und der Verfügbarkeit bei nichtvorhandenem Internet.
 
 ## Optionen
-Speaker-Profile M
+Speaker-Profile F
 - SSG
 - SSR
 - ISR
 
-Session-Detailseite F
+Session-Detailseite M
 - SSG
 - SSR
 
-Session-Übersicht M
+Session-Übersicht F
 - SSG
 - CSR
 - SSR
 
-"Mein Programm"-Dashboard F
+"Mein Programm"-Dashboard M
 - CSR
 - SSR
 - ISR
 
 # Entscheidung
-Speaker-Profile: SSG M
+Speaker-Profile: SSG F
 
-Session-Detailseite: SSR F
+Session-Detailseite: SSR M
 
-Session-Übersicht: SSG M 
+Session-Übersicht: SSG F
 
-"Mein Programm"-Dashboard: CSR F
+"Mein Programm"-Dashboard: CSR M
 
 ## Konsequenzen & Begründung
 
