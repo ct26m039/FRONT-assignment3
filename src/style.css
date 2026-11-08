@@ -1,19 +1,25 @@
+/* Design Tokens (entsprechen deiner tokens.json) */
 :root {
-  /* Primitive (aus tokens.json) */
-  --berry-700: #850c54;
-  --aubergine-900: #30041e;
-  --magenta-500: #da148a;
-  --neutral-0: #ffffff;
-  --neutral-300: #cccccc;
-  --neutral-800: #2d2d2d;
-  --neutral-900: #212121;
+  /* Primitive */
+  --color-primitive-berry-700: #850c54;
+  --color-primitive-aubergine-900: #30041e;
+  --color-primitive-magenta-500: #da148a;
+  --color-primitive-neutral-0: #ffffff;
+  --color-primitive-neutral-300: #cccccc;
+  --color-primitive-neutral-800: #2d2d2d;
+  --color-primitive-neutral-900: #212121;
+
+  /* Marke (in beiden Modi gleich) */
+  --color-brand-primary: var(--color-primitive-berry-700);
+  --color-brand-secondary: var(--color-primitive-aubergine-900);
+  --color-brand-accent: var(--color-primitive-magenta-500);
 
   /* Spacing */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2.5rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2.5rem;
 
   /* Typografie */
   --font-size-sm: 0.875rem;
@@ -22,48 +28,38 @@
   --font-size-xl: 2rem;
   --font-size-xxl: 3rem;
 
-  /* Semantisch: Light Mode */
-  --color-surface-base: var(--neutral-0);
-  --color-surface-card: var(--neutral-300);
-  --color-text-primary: var(--neutral-800);
-  --color-text-on-brand: var(--neutral-0);
-  --color-border: #dedede;
+  /* Light Mode (Standard) */
+  --color-surface-base: var(--color-primitive-neutral-0);
+  --color-surface-card: var(--color-primitive-neutral-300);
+  --color-text-primary: var(--color-primitive-neutral-800);
+  --color-text-on-brand: var(--color-primitive-neutral-0);
+}
 
-  /* Semantisch: Marke */
-  --color-brand-primary: var(--berry-700);
-  --color-brand-secondary: var(--aubergine-900);
-  --color-brand-accent: var(--magenta-500);
+/* Dark Mode folgt dem System */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-surface-base: var(--color-primitive-neutral-900);
+    --color-surface-card: var(--color-primitive-neutral-800);
+    --color-text-primary: var(--color-primitive-neutral-0);
+    --color-text-on-brand: var(--color-primitive-neutral-0);
+  }
+}
 
-  /* Marke als Text, Link und Outline (im Dark Mode heller) */
-  --color-brand-text: var(--berry-700);
-  --color-brand-tint: #f3dfea;
-
-  /* Alias-Namen, damit Conference.vue unverändert funktioniert */
-  --text: var(--color-text-primary);
-  --text-h: var(--color-text-primary);
-  --bg: var(--color-surface-base);
-  --border: var(--color-border);
-  --code-bg: var(--color-surface-card);
-  --accent: var(--color-brand-text);
-  --accent-bg: var(--color-brand-tint);
-
-  font: var(--font-size-base) / 150% system-ui, 'Segoe UI', Roboto, sans-serif;
+/* Basis-Styles */
+:root {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
   color-scheme: light dark;
   color: var(--color-text-primary);
   background: var(--color-surface-base);
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-surface-base: var(--neutral-900);
-    --color-surface-card: var(--neutral-800);
-    --color-text-primary: var(--neutral-0);
-    --color-border: #3d3d3d;
-
-    --color-brand-text: #e58ac0;
-    --color-brand-tint: #3a1428;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -72,18 +68,29 @@ body {
   color: var(--color-text-primary);
 }
 
-#app {
-  max-width: 1126px;
-  margin: 0 auto;
-  min-height: 100svh;
-  box-sizing: border-box;
-}
-
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: var(--color-text-primary);
   font-weight: 500;
+  margin: 0;
 }
-h1 { font-size: var(--font-size-xl); margin: var(--space-lg) 0; }
-h2 { font-size: var(--font-size-lg); margin: 0 0 var(--space-sm); }
+
+h1 { font-size: var(--font-size-xl); }
+h2 { font-size: var(--font-size-lg); }
 h3 { font-size: var(--font-size-base); }
-p  { margin: 0; }
+
+p { margin: 0; }
+
+a {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--color-brand-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
