@@ -76,7 +76,9 @@ const formatDay = (day: string) => {
                 <h2>{{ session.speakers.length === 1 ? 'Speaker' : 'Speakers' }}</h2>
                 <ul class="speakers">
                     <li v-for="speaker in session.speakers" :key="speaker.id">
+                        <RouterLink :to="{ name: 'speaker', params: { id: speaker.id } }">
                         <strong>{{ speaker.name }}</strong>
+                        </RouterLink>
                         <span>{{ speaker.title }}, {{ speaker.company }}</span>
                         <p>{{ speaker.bio }}</p>
                     </li>
