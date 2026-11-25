@@ -9,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}']
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,json}']
       },
       manifest: {
         name: 'VibeConnect App',
