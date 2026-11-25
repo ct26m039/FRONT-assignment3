@@ -389,3 +389,57 @@ Der erste Nutzer nach Ablauf der Zeit sieht eventuell noch veraltete Daten (stal
 - **Prompt:** Der Menüpunkt „My Program" fehlt, er war vorher da und wurde beim Umbau der Übersicht entfernt. Er soll im Header stehen. Dazu: Die Komponente `Header.vue` ist noch leer, und nach dem Einbinden in `App.vue` ändert sich auf der Seite nichts.
 - **Zweck:** Einen globalen Header mit Navigation (Sessions, My Program) anlegen, in `App.vue` einbinden und klären, warum er zunächst nicht angezeigt wurde.
 - **Antwort:** Claude erklärte, dass der Link beim Umbau der Übersichtsseite entfernt wurde, und empfahl, ihn in die globale Navigation im Header zu setzen, damit er auf jeder Seite erreichbar ist. Claude erstellte `Header.vue` (beerenroter Balken mit „VibeConnect" und den Links, mit den Design-Tokens und Dark Mode) und passte `App.vue` an (`<Header />` über `<RouterView />`, nicht mehr benötigte Styles entfernt). Die Links nutzen direkte Pfade (`/` und `/program`) statt Routennamen. Bei der Fehlersuche ergab sich, dass Änderungen den Browser nicht erreichten. Mit Testtexten in `App.vue` und `Header.vue` wurde das geprüft, und danach waren beide sichtbar. Der Fehler lag nicht im Code, sondern an einem veralteten Stand der Anzeige. Zum Schluss sollten die Testtexte entfernt und der Link in `ConferenceList.vue` gelöscht werden, damit „My Program" nicht doppelt erscheint.
+
+### Eintrag
+- **Datum:** 25.11.2026
+- **Tool:** Gemini
+- **Prompt:**
+
+> In unserer `useConferenceData.js` wird `conference-data.json` direkt als Modul importiert. Wie binde ich die Session- und Speaker-Daten in unserer `vite.config.ts` trotzdem sauber über Workbox ein, damit sie unserer Cache-First-Strategie aus Teil B entsprechen?
+
+- **Zweck:** Verstehen, wie Workbox JSON-Konferenzdaten im Precaching und Runtime-Caching der `vite.config.ts` abdeckt, und den passenden Konfigurationsblock erhalten.
+- **Antwort:**
+
+> Da `conference-data.json` direkt importiert wird, landet sie beim Build bereits mit im JS-Bundle. Um die Cache-First-Strategie aus Teil B zusätzlich explizit für `.json`-Dateien abzusichern, kannst du `json` in `workbox.globPatterns` ergänzen und eine `runtimeCaching`-Regel mit `CacheFirst` hinzufügen:
+>
+> ```ts
+> workbox: {
+>   // Umsetzung B: App-Shell & JSON-Konferenzdaten (conference-data.json) beim Installieren cachen
+>   globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,json}'],
+>   runtimeCaching: [
+>     {
+>       // Umsetzung B: Cache-First-Strategie für Session- und Speaker-Daten (*.json)
+>       urlPattern: ({ url }) => url.pathname.endsWith('.json'),
+>       handler: 'CacheFirst',
+>       options: {
+>         cacheName: 'conference-data-cache'
+>       }
+>     }
+>   ]
+> }
+> ```
+
+### Eintrag
+- **Datum:** 25.11.2026
+- **Tool:** Gemini
+- **Prompt:**
+
+> Ich habe `globPatterns` um `json` erweitert und die `CacheFirst`-Regel für `.json` in `runtimeCaching` eingebaut. Welche `options` sollte ich für `conference-data-cache` ergänzen, damit keine veralteten Daten hängen bleiben?
+
+- **Zweck:** Sinnvolle Werte und Code-Ergänzung 
+- **Antwort:**
+
+> Ergänze in `options` neben `cacheName: 'conference-data-cache'` noch `expiration` (7 Tage Gültigkeit für die Konferenzdauer, maximal 10 Einträge) sowie `cacheableResponse` (`statuses: [0, 200]`), damit nur gültige Antworten im Cache landen und keine Fehlerseiten gespeichert werden:
+>
+> ```ts
+> options: {
+>   cacheName: 'conference-data-cache',
+>   expiration: {
+>     maxEntries: 10,
+>     maxAgeSeconds: 60 * 60 * 24 * 7 // 7 Tage
+>   },
+>   cacheableResponse: {
+>     statuses: [0, 200]
+>   }
+> }
+> ```
