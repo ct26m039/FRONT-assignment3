@@ -130,7 +130,7 @@ MyProgram.vue needs a shared list of saved session IDs plus add, remove and togg
 # Prompt 3 - 11:00, 7.11.2026
 
 I'm attempting to import @file:useConferenceData.js in order to implement the detailed Coference page component. 
-it needs to have a specific route per individual conference session (like /sessions/[id]) with a title, an abstract, 
+it needs to have a specific route per individual conference session (like /sessions/id) with a title, an abstract, 
 the timeframe, the room it's located in, the track, the level of difficulty, the format and the associated speakers. 
 All 20 sessions should be functional
 
@@ -177,12 +177,12 @@ Which variable holds the IDs, and how do you read a ref's contents in plain JS?
 🔴 3. Line 11: in doesn't do what you expect
 In JavaScript, x in obj asks whether obj has a property named x. It doesn't check whether an array contains a value. Two problems together:
 - savedSessions is the ref, not the array. The ref has a property called value, so 'value' in savedSessions is true, but 's01' in savedSessions is always false.
-- Even on the array, in checks indexes: 0 in ['s05'] is true, 's05' in ['s05'] is false.
+- Even on the array, in checks indexes: 0 in 's05' is true, 's05' in 's05' is false.
 
 So isSaved always returns false. You need the array method that checks whether a value is present, used on the array inside the ref.
 
 🔴 4. Lines 15 and 22: the guards compare the wrong things
-sessions.value is a list of full session objects, but id is a string. [{id:'s01', ...}].includes('s01') is always false, so:
+sessions.value is a list of full session objects, but id is a string. {id:'s01', ...}.includes('s01') is always false, so:
 - add always returns early and never adds anything.
 - remove always returns early and never removes anything.
 
@@ -202,3 +202,100 @@ How to test it yourself
 
 Once it's exported, add the toggle button to Conference.vue, open a session and click it. Then, in DevTools under Application → Local Storage, you should see the ID appear and disappear under your key. After that, open /program and the session should be listed.
 When you've made the changes, send it again and I'll check it.
+
+# Prompt 5 - 13:00, 25.11,2026
+
+I've installed the vite-plugin-pwa plugin and created the web manifest inside of vite.config.ts . I also made a file for the service worker that currently contains a code snippet we received for this assignment inside sw.js . What do I need to make the service worker installed and registered and is the web manifest sufficient?
+
+# Output
+
+1. What's in sw.js isn't a service worker
+   That snippet is install-prompt code. It listens for beforeinstallprompt on window and shows your own "Install" button. Service workers run in a separate context where window doesn't exist, so this code can't go there. Two more problems:
+   It's TypeScript (: BeforeInstallPromptEvent | null, as ...) in a .js file, so it won't parse.
+   showInstallButton, trackInstall and trackDismiss aren't defined anywhere.
+   It belongs in a real composable, for example src/composables/useInstallPrompt.ts, used by a component that renders the install button
+
+2. Generating and registering the service worker
+   vite-plugin-pwa defaults to strategies: 'generateSW'. On vite build, Workbox writes sw.js into dist/ and precaches your build output, so you don't need your own sw file.
+   For registration, I'd recommend doing it explicitly in main.ts
+
+
+registerSW({ immediate: true })
+
+createApp(App).use(router).mount('#app')
+
+Add the types for that virtual import to the compilerOptions.types array in tsconfig.app.json, otherwise vue-tsc -b will fail:
+"types": ["vite-plugin-pwa/client"
+
+If you leave the import out, the plugin automatically adds a registerSW.js script to the built index.html. Registering explicitly makes it visible and easier to explain in your write-up.
+By default the service worker only exists in the production build. To test it with npm run dev, add this to the VitePWA({...}) options:
+devOptions: { enabled: true }
+
+3. The manifest is missing icons
+   Your icons: [] is the blocker. Chromium-based browsers only offer to install the app if the manifest has at least a 192×192 and a 512×512 icon. Put PNGs in public/ and reference them#
+
+// before
+icons: 
+
+// after
+icons: 
+{ src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+{ src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+{ src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+
+
+Use relative paths (no leading /) so they resolve under your /FRONT-assignment3/ base. To generate the PNGs from your favicon.svg, you can use npx @vite-pwa/assets-generator.
+Two optional extras that are worth adding:
+scope: '/FRONT-assignment3/' and id: '/FRONT-assignment3/' in the manifest.
+meta name="theme-color" content="#850c54" in index.html.
+
+4. Checking that it works
+Run npm run build, then npm run preview. Install only works on localhost or over HTTPS, and your GitHub Pages site will be HTTPS.
+In DevTools → Application:
+Manifest shows any installability errors.
+Service Workers should show sw.js as "activated and running".
+The install icon should appear in the address bar, and your button's beforeinstallprompt event should fire.
+I haven't changed any files.
+
+# Prompt 6 - 13:30, 25.11.2026
+
+npm run build works but the browser is not showing the manifest or the service worker. What could be the cause for this?
+
+# Output 
+
+1. You're running npm run dev
+   npm run build only writes files to dist/. If you then test with npm run dev, you get the dev server, which doesn't serve the service worker or the manifest unless you enable it. Either test the real build:
+   npm run build
+   npm run preview
+
+or add dev support to vite.config.ts:
+// before
+VitePWA({
+registerType: 'autoUpdate',
+manifest: { ... }
+})
+// after
+VitePWA({
+registerType: 'autoUpdate',
+devOptions: { enabled: true },
+manifest: { ... }
+})
+
+2. You're opening the wrong URL
+   Because of base: '/FRONT-assignment3/', the preview server serves the app under that path. Open the URL that npm run preview prints:
+   http://localhost:4173/FRONT-assignment3/
+
+not http://localhost:4173/. The service worker's scope is /FRONT-assignment3/, so it won't show up on any other path.
+3. You opened dist/index.html directly
+   If the address bar shows file:///C:/..., the service worker can't work. Service workers need http://localhost or HTTPS, and the absolute /FRONT-assignment3/... paths don't resolve from disk either. Always serve the app with npm run preview.
+   Two more issues in your files
+   These don't stop the manifest and service worker from appearing, but they'll show up as errors once they do.
+   a) The icons don't exist. public/ only has favicon.svg and icons.svg, so pwa-192x192.png and pwa-512x512.png return 404s. DevTools → Application → Manifest will flag this, and the browser won't offer to install the app until those files are in public/.
+   b) You merged the theme-color meta into the charset tag in index.html. The # is also missing:
+<!-- before -->
+<meta charset="UTF-8" name="theme-color" content="850c54"/>
+<!-- after -->
+<meta charset="UTF-8" />
+<meta name="theme-color" content="#850c54" />
+
+Once it's running via preview at the right URL, DevTools → Application should list the manifest under Manifest and sw.js under Service Workers. If an old registration gets in the way, use Storage → Clear site data and reload.
