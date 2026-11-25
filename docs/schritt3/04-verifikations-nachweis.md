@@ -6,6 +6,9 @@ Offline-Funktionalität ist gegeben, die App kann offline laden und ist voll  fu
 
 Die drei Szenarien in Abschnitt D wurden durchgearbeitet und es wurden keine großen Fehler oder Probleme festgestellt, bis auf eine besonders lange Ladezeit bei der ersten Verbindung im Offline-Mode (Szenario 3). 
 
+
+
+
 Verifikation Cross review
 Szenario 1: Programm ist bereits einmal online geladen worden, dann Flugmodus aktiviert, Session-Übersicht erneut geöffnet:
 
