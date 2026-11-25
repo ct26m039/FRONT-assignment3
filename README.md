@@ -1,4 +1,4 @@
-# FRONT Team Assignment 2
+# FRONT Team Assignment 3
 
 Team Members: Mario Steindl & Fanny Mozes
 
