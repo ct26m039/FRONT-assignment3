@@ -16,7 +16,16 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.endsWith('.json'),
             handler: 'CacheFirst',
             options: {
-              cacheName: 'conference-data-cache'
+              cacheName: 'conference-data-cache',
+
+              //Verhindert, dass der Cache unendlich wächst oder veraltete Daten ewig liegen bleiben.
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 7
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
             }
           }
         ]
