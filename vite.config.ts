@@ -8,6 +8,9 @@ export default defineConfig({
       vue(),
     VitePWA({
       registerType: 'autoUpdate',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}']
+      },
       manifest: {
         name: 'VibeConnect App',
         short_name: 'VCApp',
