@@ -32,3 +32,5 @@ Browser Cache gelöscht und Seite im Offline-Modus geöffnet.
 **Verhalten:**
 
 Nach öffnen der Seite gab es eine längere Ladezeit, ungefähr 3-4 Sekunden. Nach dieser Zeit öffnete sich die Seite mit der korrekten Visualisierung wie sie auch im Online-Zustand vorhanden ist. Alle Daten der Sessions und der Speaker sind korrekt und vorhanden, "Mein Programm" und das hinzugfügen von Sessions ist möglich und die Filterfunktionen sind ebenfalls nicht negativ betroffen.
+
+

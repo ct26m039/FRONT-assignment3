@@ -15,6 +15,23 @@ Online:
 Offline:
 ![alt text](image.png)
 
+Session-Übersicht weiste keine veränderungen auf. Filterfunktionen blieben erhalten.
+
 Szenario 2: Mein Programm" offline geöffnet, nachdem zuvor Sessions hinzugefügt wurden:
 
-Szenario 3: Erstbesuch ohne vorheriges Online-Laden im Offline-Zustand (bewusster Grenzfall — was ist hier akzeptables Verhalten und warum?:
+Online:
+![alt text](<Screenshot 2026-11-25 165650.png>)
+
+Offline:
+![alt text](image.png)
+MyProgramm behielt nach dem Neuladen der Seite alle Session. Das Entfernen der Sessions hat auch funkioniert ist blieb nach dem Neuladen erhalten.
+
+
+Szenario 3: Erstbesuch ohne vorheriges Online-Laden im Offline-Zustand (bewusster Grenzfall — was ist hier akzeptables Verhalten und warum?):
+
+Offline Erstaufruf:
+Offline und Cache gelöscht
+![alt text](image.png)
+
+Seite braucht etwas länger zum laden. Danach funktionieren alle Funktionen, sowohl in der Session übersicht als auch My Programm. 
+
