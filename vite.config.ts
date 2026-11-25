@@ -6,7 +6,21 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
       vue(),
-    VitePWA({ registerType: 'autoUpdate' })
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'VibeConnect App',
+        short_name: 'VCApp',
+        start_url: '/FRONT-assignment3/',
+        description: 'The Only Conference App You Need',
+        theme_color: '#850c54',
+        background_color: '#ffffff',
+        display: 'standalone',
+        icons: [
+
+        ]
+      }
+    })
   ],
   base: '/FRONT-assignment3/'
 })
