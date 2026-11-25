@@ -9,8 +9,19 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,json}']
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest,json}'],
+        runtimeCaching: [
+          {
+            // Cache-First für Session- und Speaker-Daten 
+            urlPattern: ({ url }) => url.pathname.endsWith('.json'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'conference-data-cache'
+            }
+          }
+        ]
       },
+      
       manifest: {
         name: 'VibeConnect App',
         short_name: 'VCApp',
