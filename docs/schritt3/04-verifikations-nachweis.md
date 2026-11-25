@@ -35,3 +35,5 @@ Offline und Cache gelöscht
 
 Seite braucht etwas länger zum laden. Danach funktionieren alle Funktionen, sowohl in der Session übersicht als auch My Programm. 
 
+Ergbenisse stimmen mit Entscheidungsprotokoll überein.
+
